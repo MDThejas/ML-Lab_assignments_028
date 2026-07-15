@@ -1,5 +1,4 @@
 import random 
-
 def mean_value(number):
     n=len(number)
     m=sum(number)/n
