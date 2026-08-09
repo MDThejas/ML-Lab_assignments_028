@@ -3,6 +3,8 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import minkowski
+import time
+import unittest
 
 # A1
 # nominal : data with are just like names or category but no specfic order
@@ -18,7 +20,7 @@ data=pd.read_excel("Lab Session Data.xlsx",sheet_name="marketing_campaign",useco
 a=[1,2,4]
 b=[4,5,6]
 p=3
-
+ 
 print("A2\n")
 
 def label_encoding(column):
@@ -138,7 +140,7 @@ def euc_Norm(vec):
     total=0
     for i in vec:
         total+=i**2
-    length=total**2
+    length=total**0.5
     return length
 
 def A7(vec1,vec2):
@@ -290,6 +292,266 @@ def kmeans(data, k):
     return labels,centroids
 
 k = 3
+start=time.time()
 labels,centroids=kmeans(modified_data, k)
+end=time.time()
+total_time=end-start
 print("cluster_labels",labels)
 print("centroids",centroids)
+print("time take for k-means",total_time)
+
+
+print("test cases for the functions:\n")
+
+class TestLab03(unittest.TestCase):
+    # label_encoding()
+    def test_label_encoding(self):
+        col = pd.Series(["A","B","A","C"])
+
+        result = label_encoding(col)
+
+        self.assertEqual(len(result),4)
+        self.assertEqual(result[0],result[2])
+
+    # one_hot_encoding()
+    def test_one_hot_encoding(self):
+        global data
+
+        data = pd.DataFrame({
+            "Marital_Status":["Single","Married","Single"]
+        })
+
+        result = one_hot_encoding(data["Marital_Status"])
+
+        self.assertEqual(result.shape[0],3)
+        self.assertEqual(result.shape[1],2)
+
+    # A3()
+    def test_A3(self):
+
+        df = pd.DataFrame({
+            "Education":["UG","PG"],
+            "Marital_Status":["Single","Married"]
+        })
+
+        original, after_label, after_onehot = A3(df)
+
+        self.assertEqual(original[0],2)
+        self.assertEqual(after_label[0],2)
+
+    # A4()
+    def test_A4(self):
+
+        a=[1,2,4]
+        b=[4,5,6]
+
+        self.assertAlmostEqual(
+            A4(a,b,2),
+            4.69041575982343,
+            places=5
+        )
+
+    # A5()
+    def test_A5(self):
+
+        v1=[1,2,3]
+        v2=[4,5,6]
+
+        pvals,dists=A5(v1,v2)
+
+        self.assertEqual(len(pvals),10)
+        self.assertEqual(len(dists),10)
+
+    # A6()
+    def test_A6(self):
+
+        v1=[1,2,4]
+        v2=[4,5,6]
+
+        own,builtin=A6(v1,v2,3)
+
+        self.assertAlmostEqual(
+            own,
+            builtin,
+            places=5
+        )
+
+    # dot_product()
+    def test_dot_product(self):
+
+        self.assertEqual(
+            dot_product(
+                [2,3,4,5],
+                [5,6,7,8]
+            ),
+            96
+        )
+
+    # euc_Norm()
+    def test_euc_norm(self):
+
+        result=euc_Norm([3,4])
+
+        self.assertIsNotNone(result)
+
+    # A7()
+    def test_A7(self):
+
+        result=A7(
+            [2,3,4,5],
+            [5,6,7,8]
+        )
+
+        self.assertEqual(len(result),6)
+
+    # mean_n()
+    def test_mean_n(self):
+
+        self.assertEqual(
+            mean_n([1,2,3,4,5]),
+            3.0
+        )
+
+    # variance_std_d()
+    def test_variance_std_d(self):
+
+        var,std=variance_std_d(
+            [1,2,3,4,5]
+        )
+
+        self.assertEqual(var,2.0)
+
+    # A8()
+    def test_A8(self):
+
+        df=pd.DataFrame({
+            "A":[1,2,3],
+            "B":[4,5,6]
+        })
+
+        cols,m,v,s=A8(df)
+
+        self.assertEqual(len(cols),2)
+        self.assertEqual(len(m),2)
+
+    # A9()
+    def test_A9(self):
+
+        df=pd.DataFrame({
+            "A":[1,2,3],
+            "B":[4,5,6]
+        })
+
+        mean,std=A9(df)
+
+        self.assertEqual(len(mean),2)
+        self.assertEqual(len(std),2)
+
+    # A10()
+    def test_A10(self):
+
+        df=pd.DataFrame({
+            "Income":[10,20,30,40,50]
+        })
+
+        hist,bins,mean,var=A10(
+            df,
+            "Income"
+        )
+
+        self.assertEqual(mean,30)
+
+    # initialize_centroids()
+    def test_initialize_centroids(self):
+
+        data=np.array([
+            [1,1],
+            [2,2],
+            [3,3]
+        ])
+
+        centroids=initialize_centroids(
+            data,
+            2
+        )
+
+        self.assertEqual(
+            len(centroids),
+            2
+        )
+
+    # assign_clusters()
+    def test_assign_clusters(self):
+
+        data=np.array([
+            [1,1],
+            [2,2],
+            [8,8]
+        ])
+
+        centroids=np.array([
+            [1,1],
+            [8,8]
+        ])
+
+        labels=assign_clusters(
+            data,
+            centroids
+        )
+
+        self.assertEqual(
+            len(labels),
+            3
+        )
+
+    # update_centroids()
+    def test_update_centroids(self):
+
+        data=np.array([
+            [1,1],
+            [2,2],
+            [8,8],
+            [9,9]
+        ])
+
+        labels=[0,0,1,1]
+
+        centroids=update_centroids(
+            data,
+            labels,
+            2
+        )
+
+        self.assertEqual(
+            len(centroids),
+            2
+        )
+
+    # kmeans()
+    def test_kmeans(self):
+
+        data=np.array([
+            [1,1],
+            [1.5,2],
+            [2,1],
+            [8,8],
+            [9,8],
+            [8,9]
+        ])
+
+        labels,centroids=kmeans(
+            data,
+            2
+        )
+
+        self.assertEqual(
+            len(labels),
+            len(data)
+        )
+
+        self.assertEqual(
+            len(centroids),
+            2
+        )
+if __name__ == "__main__":
+    unittest.main()
