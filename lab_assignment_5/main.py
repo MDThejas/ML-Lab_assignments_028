@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np 
 from collections import Counter
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier  
 
 print("A1\n")
 data=pd.read_excel("Lab Session Data.xlsx",sheet_name="marketing_campaign")
@@ -142,8 +144,30 @@ neighbours=get_neighbours(X,y,test_row,3,"bubble")
 print("k nearest neighbhours are\n",neighbours)
 w_result=weighted_class(neighbours)
 print("max_weighted_class is =",w_result)
+print("\n")
 
 
+print("A3\n")
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3)
+print("X_train",X_train)
+print("X_test",X_test)
+print("y_train",y_train)
+print("y_test",y_test)
+print("\n")
 
+print("A4\n")
+print("Training a KNN classifer using the training set obtained ...by importing KNeighborsClassifier form sklearn\n")
+neigh=KNeighborsClassifier(n_neighbors=3)
+neigh.fit(X_train,y_train)
+print("\n")
 
+print("A5\n")
+print("Test the accuracy of the kNN using the test set obtained \n")
+accuracy=neigh.score(X_test, y_test) 
+print(accuracy,"\n")
+
+print("A6\n")
+print("Use the predict() function to study the prediction behavior of the classifier for test vectors\n")
+label=neigh.predict(X_test) 
+print(label,"\n")
 
