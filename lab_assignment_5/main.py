@@ -1,0 +1,149 @@
+import pandas as pd
+import numpy as np 
+from collections import Counter
+
+print("A1\n")
+data=pd.read_excel("Lab Session Data.xlsx",sheet_name="marketing_campaign")
+
+# distance function 
+def eu_distance(a,b):
+    total=0
+    for i in range(len(a)):
+        total+=(a[i]-b[i])**2
+    return total ** 0.5
+
+#missing values
+def fill_missing(data):
+    numeric_cols=data.select_dtypes(include=np.number).columns
+    for col in numeric_cols:
+        data[col]=data[col].fillna(data[col].mean())
+    return data
+
+# encoding data
+def label_encoding(column):
+    unique_vals=column.unique()
+    encoding={}
+    for i,j in enumerate(unique_vals):
+        encoding[j]=i
+    lst=[]
+    for i in column:
+        lst.append(encoding[i])
+    return lst
+
+def one_hot_encoding(column):
+    unique_vals=column.unique()
+    lst=[]
+    for i in column:
+        row=[]
+        for j in unique_vals:
+            if i==j:
+                row.append(1)
+            else:
+                row.append(0)
+        lst.append(row)
+    return pd.DataFrame(lst,columns=unique_vals)
+
+# sorting function 
+def bubble_sort(arr):
+    n=len(arr)
+    for i in range(n):
+        for j in range(0,n-i-1):
+            if arr[j][0]>arr[j+1][0]:
+                arr[j],arr[j+1]=arr[j+1],arr[j]
+    return arr
+
+def selection_sort(arr):
+    n=len(arr)
+    for i in range(n):
+        min_idx=i
+        for j in range(i+1,n):
+            if arr[j][0]<arr[min_idx][0]:
+                min_idx=j
+        arr[i],arr[min_idx]=arr[min_idx],arr[i]
+    return arr
+
+
+def insertion_sort(arr):
+    for i in range(1,len(arr)):
+        key=arr[i]
+        j=i-1
+        while j>=0 and arr[j][0]>key[0]:
+            arr[j+1]=arr[j]
+            j-=1
+        arr[j+1] =key
+    return arr
+
+#To find distance btw test point to all others points and sort them  
+def get_neighbours(X_train,y_train,test_row,k,sort_type):
+    dist=[]
+    for i in range(len(X_train)):
+        d=eu_distance(test_row,X_train[i])
+        dist.append([d,y_train[i]])
+    if sort_type=="bubble":
+        dist=bubble_sort(dist)
+    elif sort_type=="selection":
+        dist=selection_sort(dist)
+    else:
+        dist=insertion_sort(dist)
+    first_k_values=[]
+    for i in range(k):
+        first_k_values.append(dist[i])
+    return first_k_values
+
+#find the class with most number off repetation 
+def most_number_class(arr):
+    labels=[]
+    for i in arr:
+        labels.append(i[1])   
+    count=Counter(labels)
+    max_count=0
+    max_class=-1
+    for key in count:
+        if count[key]>max_count:
+            max_count=count[key]
+            max_class=key
+    return max_class
+
+def weighted_class(arr):
+    weights={}
+    for i in arr:
+        dist=i[0]
+        label=i[1]
+        weight=1/(dist)
+        if label not in weights:
+            weights[label]=0
+        weights[label]+=weight
+    max_weight=0
+    w_class=-1
+    for i in weights:
+        if weights[i]>max_weight:
+            max_weight=weights[i]
+            w_class=i
+    return w_class
+
+
+
+marital_data=one_hot_encoding(data["Marital_Status"])
+education_data=one_hot_encoding(data["Education"])
+data=pd.concat([data,marital_data,education_data],axis=1)
+data=data.drop(["Marital_Status","Education"],axis=1)
+data=fill_missing(data)
+X=data[["Income","Recency","MntWines","MntFruits","MntMeatProducts","NumWebPurchases","NumStorePurchases"]].values
+y=data["Response"].values
+test_row=X[0]
+neighbours=get_neighbours(X,y,test_row,3,"bubble")
+print("k nearest neighbhours are\n",neighbours)
+result=most_number_class(neighbours)
+print("Max_Class =",result)
+print("\n")
+
+print("A2\n")
+neighbours=get_neighbours(X,y,test_row,3,"bubble")
+print("k nearest neighbhours are\n",neighbours)
+w_result=weighted_class(neighbours)
+print("max_weighted_class is =",w_result)
+
+
+
+
+
