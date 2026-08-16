@@ -171,3 +171,33 @@ print("Use the predict() function to study the prediction behavior of the classi
 label=neigh.predict(X_test) 
 print(label,"\n")
 
+print("A7\n")
+def fit(x_train,y_train):
+    value={}
+    value["x_train"]=x_train
+    value["y_train"]=y_train
+    return value
+value=fit(X_train,y_train)
+
+def predict(value,test_row,k):
+    x_train=value["x_train"]
+    y_train=value["y_train"]
+    neighbours=get_neighbours(x_train,y_train,test_row,k,"bubble")
+    label=most_number_class(neighbours)
+    return label
+k=3
+test_row=X_test[0]
+prediction=predict(value,test_row,k)
+print("output off given sample data is ",prediction)
+
+def score(value,X_test,y_test,k):
+    correct=0
+    for i in range(len(X_test)):
+        pred=predict(value,X_test[i],k)
+        if pred==y_test[i]:
+            correct+=1
+    ac=correct/len(X_test)
+    return ac
+score_value=score(value,X_test,y_test,k)
+print("accuracy off model is",score_value)
+
