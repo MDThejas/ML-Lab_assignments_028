@@ -3,6 +3,7 @@ import numpy as np
 from collections import Counter
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier  
+import matplotlib.pyplot as plt
 
 print("A1\n")
 data=pd.read_excel("Lab Session Data.xlsx",sheet_name="marketing_campaign")
@@ -123,8 +124,6 @@ def weighted_class(arr):
             w_class=i
     return w_class
 
-
-
 marital_data=one_hot_encoding(data["Marital_Status"])
 education_data=one_hot_encoding(data["Education"])
 data=pd.concat([data,marital_data,education_data],axis=1)
@@ -156,7 +155,7 @@ print("y_test",y_test)
 print("\n")
 
 print("A4\n")
-print("Training a KNN classifer using the training set obtained ...by importing KNeighborsClassifier form sklearn\n")
+print("Training knn classifier")
 neigh=KNeighborsClassifier(n_neighbors=3)
 neigh.fit(X_train,y_train)
 print("\n")
@@ -185,6 +184,14 @@ def predict(value,test_row,k):
     neighbours=get_neighbours(x_train,y_train,test_row,k,"bubble")
     label=most_number_class(neighbours)
     return label
+
+def w_predict(value,test_row,k):
+    x_train=value["x_train"]
+    y_train=value["y_train"]
+    neighbours=get_neighbours(x_train,y_train,test_row,k,"bubble")
+    label=weighted_class(neighbours)
+    return label
+
 k=3
 test_row=X_test[0]
 prediction=predict(value,test_row,k)
@@ -198,6 +205,66 @@ def score(value,X_test,y_test,k):
             correct+=1
     ac=correct/len(X_test)
     return ac
+
+def W_score(value,X_test,y_test,k):
+    correct=0
+    for i in range(len(X_test)):
+        pred=w_predict(value,X_test[i],k)
+        if pred==y_test[i]:
+            correct+=1
+    ac=correct/len(X_test)
+    return ac
+
 score_value=score(value,X_test,y_test,k)
 print("accuracy off model is",score_value)
+print("\n")
 
+print("A8\n")
+k_values=[]
+my_accu_function=[]
+sk_accu_built_in=[]
+
+for k in range(1,10):
+    neigh=KNeighborsClassifier(n_neighbors=k)
+    neigh.fit(X_train,y_train)
+    acc1=neigh.score(X_test,y_test)
+    acc2=score(value,X_test,y_test,k)
+    k_values.append(k)
+    sk_accu_built_in.append(acc1)
+    my_accu_function.append(acc2)
+print("k values are:",k_values)
+print("my accuracy are",my_accu_function)
+print("sklearn accuracy are",sk_accu_built_in)
+
+plt.plot(k_values,my_accu_function,marker="-")
+plt.plot(k_values,sk_accu_built_in,marker="*")
+plt.xlabel("k value")
+plt.ylabel("accuracy")
+plt.title("my kNN vs built_in kNN")
+plt.show()
+print("\n")
+
+print("A9\n")
+W_k_values=[]
+my_W_accu_function=[]
+sk_W_accu_built_in=[]
+
+for k in range(1,10):
+    neigh=KNeighborsClassifier(n_neighbors=k)
+    neigh.fit(X_train,y_train)
+    acc1=neigh.score(X_test,y_test)
+    acc2=W_score(value,X_test,y_test,k)
+    W_k_values.append(k)
+    sk_W_accu_built_in.append(acc1)
+    my_W_accu_function.append(acc2)
+print("k values are:",W_k_values)
+print("my accuracy are",my_W_accu_function)
+print("sklearn accuracy are",sk_W_accu_built_in)
+
+plt.plot(W_k_values,my_W_accu_function,marker="-")
+plt.plot(W_k_values,sk_W_accu_built_in,marker="*")
+plt.xlabel("k value")
+plt.ylabel("accuracy")
+plt.title("my W_kNN vs built_in kNN")
+plt.show()
+print("\n")
