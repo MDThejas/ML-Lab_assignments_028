@@ -39,6 +39,7 @@ def A2():
 purchase = A2()
 print(purchase)
 print("\n")
+
 print("3rd question")
 def A3():
     stock=pd.read_excel("Lab Session Data.xlsx", sheet_name="IRCTC Stock Price",usecols="A:I")

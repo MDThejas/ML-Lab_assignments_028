@@ -137,5 +137,5 @@ def A9():
         data[col]=(data[col]-data[col].min())/(data[col].max()-data[col].min())
     return data
 
-normalize_value=A9()
+normalize_value=A9() 
 print(normalize_value.head())
