@@ -57,7 +57,7 @@ def cal_gini(col):
     return gini
 
 print("A2\n")
-gini_value = cal_gini(data["Response"])
+gini_value=cal_gini(data["Response"])
 print("Gini Index for response col is",gini_value)
 print("\n")
 
