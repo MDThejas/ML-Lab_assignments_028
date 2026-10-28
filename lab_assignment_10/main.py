@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
-data=pd.read_excel("Lab Session Data(20261027-180833).xlsx",sheet_name="marketing_campaign")
+data=pd.read_excel("Lab Session Data.xlsx",sheet_name="marketing_campaign")
 data=data.drop(columns=["ID","Dt_Customer"])
 data=data.dropna(subset=["Response"])
 
